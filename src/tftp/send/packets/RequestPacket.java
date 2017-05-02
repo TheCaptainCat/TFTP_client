@@ -1,7 +1,6 @@
 package tftp.send.packets;
 
 import java.net.InetAddress;
-import tftp.send.Packet;
 
 public abstract class RequestPacket extends Packet {
     

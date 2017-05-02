@@ -1,4 +1,4 @@
-package tftp.send;
+package tftp.send.packets;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;

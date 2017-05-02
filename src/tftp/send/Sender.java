@@ -1,11 +1,14 @@
 package tftp.send;
 
+import tftp.send.packets.Packet;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import tftp.receive.Receiver;
 
-public class Sender implements Runnable {
+public class Sender extends Observable implements Runnable {
 
     private Queue<Packet> queue;
 
@@ -23,8 +26,10 @@ public class Sender implements Runnable {
         while (true) {
             try {
                 while (!queue.isEmpty()) {
-                    System.out.println("Envoi !");
-                    send(queue.poll());
+                    Packet dp = queue.poll();
+                    send(dp);
+                    setChanged();
+                    notifyObservers();
                 }
                 wait();
             } catch (Exception ex) {
@@ -37,5 +42,6 @@ public class Sender implements Runnable {
         DatagramSocket ds = new DatagramSocket();
         p.setSrcPort(ds.getLocalPort());
         ds.send(p.getDatagram());
+        ds.close();
     }
 }
