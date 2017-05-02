@@ -5,8 +5,8 @@ import tftp.send.Packet;
 
 public abstract class RequestPacket extends Packet {
     
-    public RequestPacket(int port, InetAddress address, byte opcode, String filename) {
-        super(port, address);
+    public RequestPacket(int destPort, InetAddress address, byte opcode, String filename) {
+        super(destPort, address);
         byte[] data = new byte[9 + filename.length()];
         data[0] = 0;
         data[1] = opcode;

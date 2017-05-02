@@ -4,12 +4,14 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 public abstract class Packet {
-    private int port;
+    private int destPort;
+    private int srcPort;
     private InetAddress address;
     private byte[] data;
 
-    public Packet(int port, InetAddress address) {
-        this.port = port;
+    public Packet(int destPort, InetAddress address) {
+        this.srcPort = 0;
+        this.destPort = destPort;
         this.address = address;
         this.data = null;
     }
@@ -21,8 +23,24 @@ public abstract class Packet {
     public byte[] getData() {
         return data;
     }
+
+    public void setSrcPort(int srcPort) {
+        this.srcPort = srcPort;
+    }
+
+    public int getDestPort() {
+        return destPort;
+    }
+
+    public int getSrcPort() {
+        return srcPort;
+    }
+
+    public InetAddress getAddress() {
+        return address;
+    }
     
     public final DatagramPacket getDatagram() {
-        return new DatagramPacket(data, data.length, address, port);
+        return new DatagramPacket(data, data.length, address, destPort);
     }
 }
