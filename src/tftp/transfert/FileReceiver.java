@@ -1,5 +1,8 @@
 package tftp.transfert;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -28,17 +31,28 @@ public class FileReceiver implements Observer, Runnable {
         this.packets = new ArrayList<>();
     }
 
+    private void saveFile() {
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            for (DataPacket packet : packets) {
+                fos.write(packet.getContent(), 0, packet.getLength());
+            }
+            fos.close();
+        } catch (IOException ex) {
+            Logger.getLogger(FileReceiver.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     @Override
     public synchronized void run() {
         try {
-            boolean done = false;
             ReadRequestPacket rrp = new ReadRequestPacket(connectionPort, address, filename);
             DatagramSocket socket = new DatagramSocket();
             rrp.setSrcPort(socket.getLocalPort());
             Sender sender = new Sender(socket, rrp);
             sender.send();
             socket.close();
-            while (!done) {
+            while (true) {
                 Receiver receiver = new Receiver(rrp.getSrcPort());
                 receiver.addObserver(this);
                 new Thread(receiver).start();
@@ -51,8 +65,9 @@ public class FileReceiver implements Observer, Runnable {
                 ackSender.send();
                 ackSocket.close();
                 if (lastPacket.getLength() != 512)
-                    done = true;
+                    break;
             }
+            saveFile();
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(FileReceiver.class.getName()).log(Level.SEVERE, null, ex);
         }
