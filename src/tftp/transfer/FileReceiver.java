@@ -4,8 +4,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -17,11 +15,8 @@ import tftp.receive.Receiver;
 import tftp.send.Sender;
 
 public class FileReceiver extends FileTransfer implements Observer, Runnable {
-    private List<DataPacket> packets;
-
     public FileReceiver(String filename, InetAddress address, int connectionPort) {
         super(filename, address, connectionPort);
-        this.packets = new ArrayList<>();
     }
 
     private void saveFile() {

@@ -28,6 +28,10 @@ public abstract class Packet {
         this.srcPort = srcPort;
     }
 
+    public final void setDestPort(int destPort) {
+        this.destPort = destPort;
+    }
+
     public final int getDestPort() {
         return destPort;
     }
@@ -39,14 +43,17 @@ public abstract class Packet {
     public final InetAddress getAddress() {
         return address;
     }
-    
-    public final DatagramPacket getDatagram() {
+
+    public DatagramPacket getDatagram() {
         return new DatagramPacket(data, data.length, address, destPort);
     }
+
     public static Packet buildPacket(DatagramPacket dp) {
         int opcode = (dp.getData()[0] << 8) | dp.getData()[1];
         if (opcode == 3)
             return new DataPacket(dp);
+        if (opcode == 4)
+            return new AckPacket(dp);
         return null;
     }
 }

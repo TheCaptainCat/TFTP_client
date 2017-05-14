@@ -16,13 +16,13 @@ public class Receiver extends Observable implements Runnable {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket(port);
             byte[] buf = new byte[2048];
             DatagramPacket dp = new DatagramPacket(buf, buf.length);
             System.out.println(String.format("Recieving on %d", port));
+            socket = new DatagramSocket(port);
             socket.receive(dp);
             socket.close();
             System.out.println(String.format("Received from %d", dp.getPort()));

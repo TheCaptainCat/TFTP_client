@@ -21,6 +21,23 @@ public class DataPacket extends Packet {
         }
         length = i;
     }
+    
+    public DataPacket(int port, InetAddress address, int id, byte[] content) {
+        super(port, address);
+        this.content = content;
+        this.id = id;
+        byte[] data = new byte[content.length + 4];
+        data[0] = 0;
+        data[1] = 3;
+        data[2] = (byte) (id << 8);
+        data[3] = (byte) id;
+        length = 0;
+        while (length < 512 && length < content.length && content[length] != 0) {
+            data[length + 4] = content[length];
+            length++;
+        }
+        setData(data);
+    }
 
     public int getId() {
         return id;
@@ -32,5 +49,15 @@ public class DataPacket extends Packet {
 
     public int getLength() {
         return length;
+    }
+
+    @Override
+    public DatagramPacket getDatagram() {
+        return new DatagramPacket(data, length + 4, address, destPort);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DataPacket n°%d (%d bytes)", id, length);
     }
 }
