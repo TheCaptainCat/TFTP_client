@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import tftp.transfert.FileReceiver;
+import tftp.transfer.FileReceiver;
 
 public class Client implements Runnable{
 

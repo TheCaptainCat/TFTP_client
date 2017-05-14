@@ -1,8 +1,6 @@
-package tftp.transfert;
+package tftp.transfer;
 
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -18,16 +16,11 @@ import tftp.packets.ReadRequestPacket;
 import tftp.receive.Receiver;
 import tftp.send.Sender;
 
-public class FileReceiver implements Observer, Runnable {
-    private final String filename;
-    private final InetAddress address;
-    private final int connectionPort;
+public class FileReceiver extends FileTransfer implements Observer, Runnable {
     private List<DataPacket> packets;
 
     public FileReceiver(String filename, InetAddress address, int connectionPort) {
-        this.filename = filename;
-        this.address = address;
-        this.connectionPort = connectionPort;
+        super(filename, address, connectionPort);
         this.packets = new ArrayList<>();
     }
 
