@@ -1,47 +1,20 @@
 package tftp.send;
 
-import tftp.send.packets.Packet;
+import tftp.packets.Packet;
 import java.io.IOException;
 import java.net.DatagramSocket;
-import java.util.Observable;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import tftp.receive.Receiver;
 
-public class Sender extends Observable implements Runnable {
+public class Sender {
+    private final DatagramSocket socket;
+    private final Packet packet;
 
-    private Queue<Packet> queue;
-
-    public Sender() {
-        queue = new ConcurrentLinkedQueue<>();
+    public Sender(DatagramSocket socket, Packet packet) {
+        this.socket = socket;
+        this.packet = packet;
     }
 
-    public synchronized void sendPacket(Packet p) {
-        queue.add(p);
-        notify();
-    }
-
-    @Override
-    public synchronized void run() {
-        while (true) {
-            try {
-                while (!queue.isEmpty()) {
-                    Packet dp = queue.poll();
-                    send(dp);
-                    setChanged();
-                    notifyObservers();
-                }
-                wait();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    private void send(Packet p) throws IOException {
-        DatagramSocket ds = new DatagramSocket();
-        p.setSrcPort(ds.getLocalPort());
-        ds.send(p.getDatagram());
-        ds.close();
+    public void send() throws IOException {
+        System.out.println(String.format("Sending on %d to %d: %s", socket.getLocalPort(), packet.getDestPort(), packet));
+        socket.send(packet.getDatagram());
     }
 }

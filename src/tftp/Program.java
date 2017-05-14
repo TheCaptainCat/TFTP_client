@@ -2,7 +2,7 @@ package tftp;
 
 import java.net.InetAddress;
 import tftp.send.Sender;
-import tftp.send.packets.ReadRequestPacket;
+import tftp.packets.ReadRequestPacket;
 
 public class Program {
     public static void main(String[] args) throws Exception {

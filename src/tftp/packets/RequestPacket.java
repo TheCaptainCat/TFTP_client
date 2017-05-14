@@ -1,11 +1,13 @@
-package tftp.send.packets;
+package tftp.packets;
 
 import java.net.InetAddress;
 
 public abstract class RequestPacket extends Packet {
-    
+    protected String filename;
+
     public RequestPacket(int destPort, InetAddress address, byte opcode, String filename) {
         super(destPort, address);
+        this.filename = filename;
         byte[] data = new byte[9 + filename.length()];
         data[0] = 0;
         data[1] = opcode;

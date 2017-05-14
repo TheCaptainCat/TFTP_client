@@ -1,13 +1,13 @@
-package tftp.send.packets;
+package tftp.packets;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 public abstract class Packet {
-    private int destPort;
-    private int srcPort;
-    private InetAddress address;
-    private byte[] data;
+    protected int destPort;
+    protected int srcPort;
+    protected InetAddress address;
+    protected byte[] data;
 
     public Packet(int destPort, InetAddress address) {
         this.srcPort = 0;
@@ -16,31 +16,37 @@ public abstract class Packet {
         this.data = null;
     }
 
-    public void setData(byte[] data) {
+    public final void setData(byte[] data) {
         this.data = data;
     }
 
-    public byte[] getData() {
+    public final byte[] getData() {
         return data;
     }
 
-    public void setSrcPort(int srcPort) {
+    public final void setSrcPort(int srcPort) {
         this.srcPort = srcPort;
     }
 
-    public int getDestPort() {
+    public final int getDestPort() {
         return destPort;
     }
 
-    public int getSrcPort() {
+    public final int getSrcPort() {
         return srcPort;
     }
 
-    public InetAddress getAddress() {
+    public final InetAddress getAddress() {
         return address;
     }
     
     public final DatagramPacket getDatagram() {
         return new DatagramPacket(data, data.length, address, destPort);
+    }
+    public static Packet buildPacket(DatagramPacket dp) {
+        int opcode = (dp.getData()[0] << 8) | dp.getData()[1];
+        if (opcode == 3)
+            return new DataPacket(dp);
+        return null;
     }
 }
