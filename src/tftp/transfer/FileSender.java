@@ -43,20 +43,17 @@ public class FileSender extends FileTransfer implements Observer, Runnable {
     public synchronized void run() {
         try {
             processFile();
-            packets.forEach(packet -> {
-                System.out.println(packet);
-                System.out.println(new String(packet.getContent()));
-            });
-            WriteRequestPacket wrp = new WriteRequestPacket(connectionPort, address, filename);
             DatagramSocket socket = new DatagramSocket();
-            wrp.setSrcPort(socket.getLocalPort());
+            WriteRequestPacket wrp = new WriteRequestPacket(connectionPort, address, filename);
             Sender sender = new Sender(socket, wrp);
-            sender.send();
-            socket.close();
-            while (true) {
-                Receiver receiver = new Receiver(wrp.getSrcPort());
+            {
+                Receiver receiver = new Receiver(socket);
                 receiver.addObserver(this);
                 new Thread(receiver).start();
+                while (!receiver.isReady()) {}
+            }
+            sender.send();
+            while (true) {
                 wait();
                 if (sentId != receivedId)
                     break;
@@ -64,16 +61,20 @@ public class FileSender extends FileTransfer implements Observer, Runnable {
                     break;
                 DataPacket dataPacket = packets.get(sentId);
                 dataPacket.setDestPort(comPort);
-                DatagramSocket dataSocket = new DatagramSocket(wrp.getSrcPort());
-                Sender dataSender = new Sender(dataSocket, dataPacket);
+                Sender dataSender = new Sender(socket, dataPacket);
+                {
+                    Receiver receiver = new Receiver(socket);
+                    receiver.addObserver(this);
+                    new Thread(receiver).start();
+                    while (!receiver.isReady()) {}
+                }
                 dataSender.send();
                 sentId++;
-                dataSocket.close();
             }
+            socket.close();
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(FileSender.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
 
     @Override

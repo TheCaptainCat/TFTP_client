@@ -15,7 +15,7 @@ public class DataPacket extends Packet {
         id = (data[2] << 8) | data[3];
         content = new byte[512];
         int i = 0;
-        while (i < 512 && data[i + 4] != 0) {
+        while (i < 512 && i < dp.getLength()) {
             content[i] = data[i + 4];
             i++;
         }

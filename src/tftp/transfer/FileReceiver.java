@@ -34,27 +34,32 @@ public class FileReceiver extends FileTransfer implements Observer, Runnable {
     @Override
     public synchronized void run() {
         try {
-            ReadRequestPacket rrp = new ReadRequestPacket(connectionPort, address, filename);
             DatagramSocket socket = new DatagramSocket();
-            rrp.setSrcPort(socket.getLocalPort());
+            ReadRequestPacket rrp = new ReadRequestPacket(connectionPort, address, filename);
             Sender sender = new Sender(socket, rrp);
-            sender.send();
-            socket.close();
-            while (true) {
-                Receiver receiver = new Receiver(rrp.getSrcPort());
+            {
+                Receiver receiver = new Receiver(socket);
                 receiver.addObserver(this);
                 new Thread(receiver).start();
+                while (!receiver.isReady()) {}
+            }
+            sender.send();
+            while (true) {
                 wait();
                 DataPacket lastPacket = packets.get(packets.size() - 1);
                 AckPacket ack = new AckPacket(lastPacket.getDestPort(), address, lastPacket.getId());
-                ack.setSrcPort(rrp.getSrcPort());
-                DatagramSocket ackSocket = new DatagramSocket(rrp.getSrcPort());
-                Sender ackSender = new Sender(ackSocket, ack);
+                Sender ackSender = new Sender(socket, ack);
+                {
+                    Receiver receiver = new Receiver(socket);
+                    receiver.addObserver(this);
+                    new Thread(receiver).start();
+                    while (!receiver.isReady()) {}
+                }
                 ackSender.send();
-                ackSocket.close();
                 if (lastPacket.getLength() != 512)
                     break;
             }
+            socket.close();
             saveFile();
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(FileReceiver.class.getName()).log(Level.SEVERE, null, ex);

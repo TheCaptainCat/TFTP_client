@@ -16,10 +16,10 @@ public class Client implements Runnable{
     @Override
     public void run() {
         try {
-            /*FileReceiver fr = new FileReceiver("test.txt", InetAddress.getByName("192.168.1.14"), 69);
-            new Thread(fr).start();*/
-            FileSender fs = new FileSender("test2.txt", InetAddress.getByName("192.168.1.14"), 69);
-            new Thread(fs).start();
+            FileReceiver fr = new FileReceiver("pepe.png", InetAddress.getByName("134.214.117.134"), 69);
+            new Thread(fr).start();
+            /*FileSender fs = new FileSender("pepe.jpg", InetAddress.getByName("134.214.117.134"), 69);
+            new Thread(fs).start();*/
         } catch (UnknownHostException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }

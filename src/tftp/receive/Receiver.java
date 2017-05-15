@@ -9,28 +9,36 @@ import java.util.logging.Logger;
 import tftp.packets.Packet;
 
 public class Receiver extends Observable implements Runnable {
-    private int port;
+    private final DatagramSocket socket;
+    private volatile boolean ready;
 
-    public Receiver(int port) {
-        this.port = port;
+    public boolean isReady() {
+        return ready;
+    }
+
+    public void setReady() {
+        this.ready = true;
+    }
+
+    public Receiver(DatagramSocket socket) {
+        this.socket = socket;
+        this.ready = false;
     }
 
     @Override
     public synchronized void run() {
-        DatagramSocket socket = null;
         try {
             byte[] buf = new byte[2048];
             DatagramPacket dp = new DatagramPacket(buf, buf.length);
-            System.out.println(String.format("Recieving on %d", port));
-            socket = new DatagramSocket(port);
+            System.out.println(String.format("Recieving on %d", socket.getLocalPort()));
+            setReady();
             socket.receive(dp);
-            socket.close();
             System.out.println(String.format("Received from %d", dp.getPort()));
             Packet p = Packet.buildPacket(dp);
             setChanged();
             notifyObservers(p);
         } catch (IOException ex) {
-            Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Socket closed, transfer done.");
         }
     }
 }
