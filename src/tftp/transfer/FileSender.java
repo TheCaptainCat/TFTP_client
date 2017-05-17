@@ -32,7 +32,7 @@ public class FileSender extends FileTransfer implements Observer, Runnable {
         while (true) {
             byte[] data = new byte[512];
             int length = fis.read(data, 0, 512);
-            DataPacket packet = new DataPacket(connectionPort, address, i++, data);
+            DataPacket packet = new DataPacket(connectionPort, address, i++, data, length);
             packets.add(packet);
             if (length != 512)
                 break;
@@ -55,6 +55,7 @@ public class FileSender extends FileTransfer implements Observer, Runnable {
             sender.send();
             while (true) {
                 wait();
+                System.out.println(sentId + " " + receivedId);
                 if (sentId != receivedId)
                     break;
                 if (sentId == packets.size())

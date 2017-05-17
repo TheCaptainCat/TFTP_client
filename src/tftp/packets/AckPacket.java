@@ -25,7 +25,7 @@ public class AckPacket extends Packet {
         super(dp.getPort(), dp.getAddress());
         byte[] data = dp.getData();
         setData(data);
-        this.id = (data[2] << 8) | data[3];
+        this.id = ((data[2] << 8) & 0x0000ff00) | (data[3] & 0x000000ff);
     }
 
     @Override

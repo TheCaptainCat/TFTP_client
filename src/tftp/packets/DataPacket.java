@@ -22,17 +22,17 @@ public class DataPacket extends Packet {
         length = i;
     }
     
-    public DataPacket(int port, InetAddress address, int id, byte[] content) {
+    public DataPacket(int port, InetAddress address, int id, byte[] content, int contentLength) {
         super(port, address);
         this.content = content;
         this.id = id;
         byte[] data = new byte[content.length + 4];
         data[0] = 0;
         data[1] = 3;
-        data[2] = (byte) (id << 8);
-        data[3] = (byte) id;
+        data[2] = ((byte)((id & 0x0000ff00) >> 8));
+        data[3] = ((byte)(id & 0x000000ff));
         length = 0;
-        while (length < 512 && length < content.length && content[length] != 0) {
+        while (length < 512 && length < contentLength) {
             data[length + 4] = content[length];
             length++;
         }

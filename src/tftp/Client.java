@@ -16,9 +16,9 @@ public class Client implements Runnable{
     @Override
     public void run() {
         try {
-            FileReceiver fr = new FileReceiver("pepe.png", InetAddress.getByName("134.214.117.134"), 69);
+            FileReceiver fr = new FileReceiver("wp.jpg", InetAddress.getByName("134.214.117.134"), 69);
             new Thread(fr).start();
-            /*FileSender fs = new FileSender("pepe.jpg", InetAddress.getByName("134.214.117.134"), 69);
+            /*FileSender fs = new FileSender("wp.jpg", InetAddress.getByName("134.214.117.134"), 69);
             new Thread(fs).start();*/
         } catch (UnknownHostException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
