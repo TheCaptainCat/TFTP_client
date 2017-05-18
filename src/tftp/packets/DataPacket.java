@@ -12,7 +12,7 @@ public class DataPacket extends Packet {
         super(dp.getPort(), dp.getAddress());
         byte[] data = dp.getData();
         setData(data);
-        id = (data[2] << 8) | data[3];
+        id = ((data[2] << 8) & 0x0000ff00) | (data[3] & 0x000000ff);
         content = new byte[512];
         int i = 0;
         while (i < 512 && i < dp.getLength()) {

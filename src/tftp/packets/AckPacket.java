@@ -16,8 +16,8 @@ public class AckPacket extends Packet {
         byte[] data = new byte[4];
         data[0] = 0;
         data[1] = 4;
-        data[2] = (byte) (id << 8);
-        data[3] = (byte) id;
+        data[2] = ((byte)((id & 0x0000ff00) >> 8));
+        data[3] = ((byte)(id & 0x000000ff));
         setData(data);
     }
     
