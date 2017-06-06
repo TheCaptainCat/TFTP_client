@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import tftp.packets.Packet;
 
 public class Receiver extends Observable implements Runnable {

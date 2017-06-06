@@ -50,10 +50,16 @@ public abstract class Packet {
 
     public static Packet buildPacket(DatagramPacket dp) {
         int opcode = (dp.getData()[0] << 8) | dp.getData()[1];
-        if (opcode == 3)
-            return new DataPacket(dp);
-        if (opcode == 4)
-            return new AckPacket(dp);
+        switch (opcode) {
+            case 3:
+                return new DataPacket(dp);
+            case 4:
+                return new AckPacket(dp);
+            case 5:
+                return new ErrorPacket(dp);
+            default:
+                break;
+        }
         return null;
     }
 }

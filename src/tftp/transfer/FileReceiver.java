@@ -10,11 +10,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import tftp.packets.AckPacket;
 import tftp.packets.DataPacket;
+import tftp.packets.ErrorPacket;
 import tftp.packets.ReadRequestPacket;
 import tftp.receive.Receiver;
 import tftp.send.Sender;
 
 public class FileReceiver extends FileTransfer implements Observer, Runnable {
+
+    private static final String RECEIVE_OK = "Receive OK";
+
     public FileReceiver(String filename, InetAddress address, int connectionPort) {
         super(filename, address, connectionPort);
     }
@@ -41,7 +45,8 @@ public class FileReceiver extends FileTransfer implements Observer, Runnable {
                 Receiver receiver = new Receiver(socket);
                 receiver.addObserver(this);
                 new Thread(receiver).start();
-                while (!receiver.isReady()) {}
+                while (!receiver.isReady()) {
+                }
             }
             sender.send();
             while (true) {
@@ -53,12 +58,15 @@ public class FileReceiver extends FileTransfer implements Observer, Runnable {
                     Receiver receiver = new Receiver(socket);
                     receiver.addObserver(this);
                     new Thread(receiver).start();
-                    while (!receiver.isReady()) {}
+                    while (!receiver.isReady()) {
+                    }
                 }
                 ackSender.send();
-                if (lastPacket.getLength() != 512)
+                if (lastPacket.getLength() != 512) {
                     break;
+                }
             }
+            notifyNewMessage(RECEIVE_OK);
             socket.close();
             saveFile();
         } catch (IOException | InterruptedException ex) {
@@ -73,6 +81,8 @@ public class FileReceiver extends FileTransfer implements Observer, Runnable {
                 DataPacket packet = (DataPacket) arg;
                 packets.add(packet);
                 notify();
+            } else if (arg instanceof ErrorPacket) {
+                notifyNewMessage(((ErrorPacket) arg).getMessage());
             }
         }
     }
